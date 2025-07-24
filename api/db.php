@@ -4,18 +4,27 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// --- CONFIGURA TUS DATOS AQUÍ ---
-$servername = "localhost";      // Generalmente 'localhost'
-$username = "tu_usuario_db";    // El usuario de tu base de datos
-$password = "tu_contraseña_db"; // La contraseña de tu base de datos
-$dbname = "tu_nombre_db";       // El nombre de tu base de datos
+// Obtener la URL de la base de datos de las variables de entorno de Railway
+$db_url = getenv('MYSQL_URL');
+
+if ($db_url === false) {
+    die("Error: No se encontró la variable de entorno MYSQL_URL.");
+}
+
+// Parsear la URL para obtener las credenciales
+$db_parts = parse_url($db_url);
+
+$servername = $db_parts['host'];
+$username = $db_parts['user'];
+$password = $db_parts['pass'];
+$dbname = ltrim($db_parts['path'], '/');
+$port = $db_parts['port'];
 
 // Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname, $port);
 
 // Chequear conexión
 if ($conn->connect_error) {
-  // En una aplicación real, se manejaría este error de forma más elegante
   die("Connection failed: " . $conn->connect_error);
 }
 
