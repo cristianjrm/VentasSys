@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VentasSys</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS (js-xlsx) para exportar a Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="flex h-screen bg-gray-200">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-gray-800 text-white p-5 flex-shrink-0 flex flex-col absolute sm:relative inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 transition-transform duration-200 ease-in-out z-30">
+            <div class="flex items-center space-x-2 mb-10">
+                <i data-lucide="shopping-cart" class="w-8 h-8"></i>
+                <h1 class="text-2xl font-bold">VentasSys</h1>
+            </div>
+            <nav class="flex-grow">
+                <a href="#dashboard" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg bg-gray-900">
+                    <i data-lucide="layout-dashboard" class="lucide"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#ventas" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="dollar-sign" class="lucide"></i>
+                    <span>Venta</span>
+                </a>
+                <a href="#inventario" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="boxes" class="lucide"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="#reportes" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="bar-chart-3" class="lucide"></i>
+                    <span>Reportes</span>
+                </a>
+                <a href="#gastos" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="arrow-down-circle" class="lucide"></i>
+                    <span>Gastos</span>
+                </a>
+                <a href="#precios" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="tag" class="lucide"></i>
+                    <span>Lista de Precios</span>
+                </a>
+                 <a href="#tasa" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="trending-up" class="lucide"></i>
+                    <span>Tasa del Día</span>
+                </a>
+                <a href="#configuraciones" class="nav-link flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-700 mt-2">
+                    <i data-lucide="settings" class="lucide"></i>
+                    <span>Configuraciones</span>
+                </a>
+            </nav>
+            <div class="text-xs text-gray-400">
+                <p>&copy; 2025 VentasSys</p>
+                <p>Todos los derechos reservados.</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-md p-4 flex justify-between items-center">
+                <button id="menu-button" class="text-gray-500 focus:outline-none sm:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h2 id="page-title" class="text-xl font-semibold text-gray-700">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                     <div class="flex items-center space-x-2">
+                        <i data-lucide="user-circle" class="w-8 h-8 text-gray-600"></i>
+                        <span id="username-display" class="text-gray-600">Admin</span>
+                     </div>
+                     <button id="logout-btn" title="Cerrar Sesión" class="text-red-500 hover:text-red-700 focus:outline-none">
+                        <i data-lucide="log-out" class="w-6 h-6"></i>
+                     </button>
+                </div>
+            </header>
+
+            <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="page">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Ventas Hoy</p>
+                                <p id="ventas-hoy" class="text-2xl font-bold text-blue-600">$0.00</p>
+                                <p id="ventas-hoy-bs" class="text-lg text-gray-600">Bs. 0.00</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i data-lucide="dollar-sign" class="text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Gastos Hoy</p>
+                                <p id="gastos-hoy" class="text-2xl font-bold text-red-600">$0.00</p>
+                                <p id="gastos-hoy-bs" class="text-lg text-gray-600">Bs. 0.00</p>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <i data-lucide="arrow-down" class="text-red-600"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Productos en Stock</p>
+                                <p id="productos-stock" class="text-3xl font-bold text-purple-600">0</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full">
+                                <i data-lucide="boxes" class="text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ventas Section -->
+                <section id="ventas" class="page hidden">
+                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-4">Punto de Venta</h3>
+                            <div class="mb-4">
+                                <label for="venta-producto-search" class="block text-sm font-medium text-gray-700">Buscar Producto por nombre</label>
+                                <input type="text" id="venta-producto-search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Escribe para filtrar...">
+                            </div>
+                            <div id="product-card-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 mt-2 h-96 overflow-y-auto p-2">
+                                <!-- Product cards will be injected here -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                            <h3 class="text-xl font-semibold mb-4">Carrito</h3>
+                            <div id="cart-items-container" class="flex-grow overflow-y-auto">
+                                <!-- Cart items will be added here -->
+                            </div>
+                            <div class="mt-auto pt-4 border-t">
+                                <div id="sale-summary" class="space-y-2">
+                                    <!-- Summary content is generated by JS -->
+                                </div>
+                                <button id="proceed-to-payment-btn" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400">
+                                    Proceder al Pago
+                                </button>
+                                <button id="cancelar-venta-btn" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg shadow-md hover:bg-red-600 focus:outline-none">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inventario Section -->
+                <section id="inventario" class="page hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Inventario de Productos</h2>
+                        <button id="add-product-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 flex items-center space-x-2">
+                            <i data-lucide="plus-circle"></i>
+                            <span>Añadir Producto</span>
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Compra</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Venta</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Products will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Reportes Section -->
+                <section id="reportes" class="page hidden">
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
+                        <h2 class="text-2xl font-semibold text-gray-800 w-full sm:w-auto">Reporte General</h2>
+                        <div class="flex items-center space-x-2 w-full sm:w-auto flex-wrap">
+                           <input type="date" id="report-date-start" class="rounded-md border-gray-300 shadow-sm">
+                           <span class="text-gray-500">a</span>
+                           <input type="date" id="report-date-end" class="rounded-md border-gray-300 shadow-sm">
+                           <select id="report-type-filter" class="rounded-md border-gray-300 shadow-sm">
+                                <option value="Todo">Todo</option>
+                                <option value="Venta">Ventas</option>
+                                <option value="Gasto">Gastos</option>
+                           </select>
+                           <button id="filter-report-btn" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"><i data-lucide="filter" class="w-5 h-5"></i></button>
+                           <button id="reset-report-btn" class="bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"><i data-lucide="rotate-cw" class="w-5 h-5"></i></button>
+                           <button id="export-report-btn" class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
+                                <i data-lucide="download" class="w-5 h-5"></i>
+                                <span>Exportar</span>
+                           </button>
+                        </div>
+                    </div>
+                    
+                    <div id="report-summary" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-4 mb-6"></div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Detalle de Movimientos del Período</h3>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción / Producto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método / Ref.</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Gastos Section -->
+                <section id="gastos" class="page hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Gestión de Gastos</h2>
+                        <button id="add-expense-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 flex items-center space-x-2">
+                             <i data-lucide="plus-circle"></i>
+                            <span>Añadir Gasto</span>
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenses-table" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Precios Section -->
+                <section id="precios" class="page hidden">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lista de Precios</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+                        <div class="mb-4 text-lg">Tasa de cambio actual: <span id="tasa-display-precios" class="font-bold text-blue-600"></span></div>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" id="price-list-header-primary">Precio (USD)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" id="price-list-header-secondary">Precio (VES)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="price-list-table" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Tasa del Día Section -->
+                <section id="tasa" class="page hidden">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Configurar Tasa del Día</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+                        <div class="mb-4">
+                            <label for="tasa-input" class="block text-sm font-medium text-gray-700">Tasa de Cambio (Moneda Secundaria por 1 de Primaria)</label>
+                            <input type="number" id="tasa-input" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Ej: 36.50">
+                        </div>
+                        <button id="save-tasa-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700">Guardar Tasa</button>
+                        <p class="mt-4 text-center">Tasa actual: <strong id="current-tasa" class="text-xl"></strong></p>
+                    </div>
+                </section>
+                
+                <!-- Configuraciones Section -->
+                <section id="configuraciones" class="page hidden">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Configuraciones Generales</h2>
+                    <div class="space-y-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold border-b pb-2 mb-4">Datos de la Empresa</h3>
+                            <form id="company-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="company-name" class="block text-sm font-medium text-gray-700">Nombre</label>
+                                    <input type="text" id="company-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                </div>
+                                <div>
+                                    <label for="company-phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                                    <input type="text" id="company-phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="company-address" class="block text-sm font-medium text-gray-700">Dirección</label>
+                                    <input type="text" id="company-address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                </div>
+                                <div class="md:col-span-2 text-right">
+                                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Guardar Datos</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex justify-between items-center border-b pb-2 mb-4">
+                                <h3 class="text-lg font-semibold">Gestión de Usuarios</h3>
+                                <button id="add-user-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 flex items-center space-x-2">
+                                    <i data-lucide="plus"></i>
+                                    <span>Añadir Usuario</span>
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table" class="bg-white divide-y divide-gray-200"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-red-300">
+                            <h3 class="text-lg font-semibold text-red-700">Zona de Peligro</h3>
+                            <p class="text-sm text-gray-600 my-2">Esto borrará permanentemente todos sus datos (productos, ventas, gastos, etc.). Esta acción no se puede deshacer.</p>
+                            <button type="button" id="delete-all-data-btn" class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-800">Borrar Todos los Datos</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal for Forms -->
+    <div id="form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-40">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center pb-3">
+                <p id="modal-title" class="text-2xl font-bold">Añadir Producto</p>
+                <div id="modal-close-btn" class="cursor-pointer z-50">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </div>
+            </div>
+            <div id="modal-content" class="mt-3"></div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
